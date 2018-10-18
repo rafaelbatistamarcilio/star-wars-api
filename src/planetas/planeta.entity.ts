@@ -4,7 +4,7 @@ import { Entity, Column, ObjectIdColumn } from 'typeorm';
 export class Planeta {
 
     @ObjectIdColumn()
-    id: number;
+    id: string;
 
     @Column({ type: 'text', length: 50 })
     public nome: string;

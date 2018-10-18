@@ -15,13 +15,15 @@
     "test": "jest",
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "webpack": "webpack --config webpack.config.js"
+    "webpack": "webpack --config webpack.config.js",
+    "start:debug": "nodemon --config nodemon-debug.json"
   },
   "dependencies": {
     "@nestjs/common": "^5.3.11",
     "@nestjs/core": "^5.3.11",
     "@nestjs/typeorm": "^5.2.2",
     "@nestjs/websockets": "^5.3.11",
+    "axios": "^0.18.0",
     "fastify-formbody": "^2.0.1",
     "mongodb": "^3.1.8",
     "reflect-metadata": "^0.1.12",

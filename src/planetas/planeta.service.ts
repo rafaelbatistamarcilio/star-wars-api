@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Planeta } from './planeta.entity';
+import axios from 'axios';
 
 @Injectable()
 export class PlanetaService {
@@ -39,15 +40,8 @@ export class PlanetaService {
 
   async consultarAparicoes(pagina: number): Promise<{ next: string, results: [{ name: string, films: string[] }] }> {
     try {
-      const headers: RequestInit = {
-        method: 'GET',
-        mode: 'cors',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      };
-
-      return await fetch('https://swapi.co/api/planets/?page=' + pagina, headers)
-                  .then(data => data.json())
-                  .catch(error => Logger.error(error));
+      const response = await axios.get('https://swapi.co/api/planets/?page=' + pagina);
+      return response.data;
     } catch (error) {
       Logger.error('Erro ao recuperar planetas na API do STAR WARS');
       Logger.error(error);
@@ -56,7 +50,8 @@ export class PlanetaService {
 
   async recuperarPlanetas(): Promise<Planeta[]> {
     try {
-      return await this.planetaRepository.find();
+      const planetas = await this.planetaRepository.find();
+      return planetas;
     } catch (error) {
       Logger.error(error);
       throw error;
@@ -80,6 +75,15 @@ export class PlanetaService {
   async recuperarPorId(id: string): Promise<Planeta> {
     try {
       return await this.planetaRepository.findOne(id);
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  }
+
+  async excluir(id: string): Promise<void> {
+    try {
+      await this.planetaRepository.delete(id);
     } catch (error) {
       Logger.error(error);
       throw error;
