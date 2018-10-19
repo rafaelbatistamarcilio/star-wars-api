@@ -1,20 +1,36 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadGatewayException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Planeta } from './planeta.entity';
 import axios from 'axios';
+import { PesquisaSW } from './pesquisa-sw.model';
+import { PlanetaRepository } from './planeta.repository';
 
 @Injectable()
 export class PlanetaService {
 
-  constructor(@InjectRepository(Planeta) private readonly planetaRepository: Repository<Planeta>) {
+  constructor(
+    @InjectRepository(PlanetaRepository)
+    private readonly planetaRepository: PlanetaRepository) {
 
   }
 
   async adicionar(planeta: Planeta): Promise<Planeta> {
     try {
       planeta.filmes = await this.recuperarParticipacoesEmFilmes(planeta.nome, 1);
-      return await this.planetaRepository.save(planeta);
+      const planetaNovo = await this.planetaRepository.save(planeta);
+      return this.recuperarPorId(planetaNovo.id);
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  }
+
+  async editar(planeta: Planeta): Promise<Planeta> {
+    try {
+      planeta.filmes = await this.recuperarParticipacoesEmFilmes(planeta.nome, 1);
+      await this.planetaRepository.atualizar(planeta);
+      return await this.planetaRepository.findOne(planeta.id);
     } catch (error) {
       Logger.error(error);
       throw error;
@@ -24,7 +40,7 @@ export class PlanetaService {
   async recuperarParticipacoesEmFilmes(nomeDoPlaneta, pagina): Promise<number> {
 
     try {
-      const resposta = await this.consultarAparicoes(pagina);
+      const resposta = await this.consultarApiStarWars(pagina);
       const filme = resposta.results.find(item => item.name.toLocaleLowerCase() === nomeDoPlaneta.toLocaleLowerCase());
 
       if (filme && filme.films) return filme.films.length;
@@ -38,7 +54,7 @@ export class PlanetaService {
     }
   }
 
-  async consultarAparicoes(pagina: number): Promise<{ next: string, results: [{ name: string, films: string[] }] }> {
+  async consultarApiStarWars(pagina: number): Promise<PesquisaSW> {
     try {
       const response = await axios.get('https://swapi.co/api/planets/?page=' + pagina);
       return response.data;
@@ -60,12 +76,7 @@ export class PlanetaService {
 
   async recuperarPorNome(nome: string): Promise<Planeta[]> {
     try {
-      return await this.planetaRepository
-        .createQueryBuilder('planeta')
-        .where('nome = :nome')
-        .setParameter('nome', nome)
-        .getMany();
-
+      return await this.planetaRepository.recuperarPorNome(nome);
     } catch (error) {
       Logger.error(error);
       throw error;
@@ -83,10 +94,27 @@ export class PlanetaService {
 
   async excluir(id: string): Promise<void> {
     try {
-      await this.planetaRepository.delete(id);
+      const entity = await this.planetaRepository.findOne(id);
+      if (!entity) {
+        throw Error('item id ' + id + ' não encontrado');
+      }
+      await this.planetaRepository.remove(entity);
     } catch (error) {
-      Logger.error(error);
-      throw error;
+      Logger.error(JSON.stringify(error));
+      throw new BadGatewayException('item id ' + id + ' não encontrado');
     }
+  }
+
+  async atualizar(planeta: Planeta): Promise<Planeta> {
+      try {
+          return await this.planetaRepository.atualizar(planeta);
+      } catch (error) {
+          Logger.error(error);
+          throw error;
+      }
+  }
+
+  async limpar(){
+    this.planetaRepository.clear();
   }
 }

@@ -16,7 +16,7 @@ export class PlanetaController {
    */
   @Put()
   async editar(@Body() planeta: Planeta): Promise<Planeta> {
-    return await this.planetaService.adicionar(planeta);
+    return await this.planetaService.editar(planeta);
   }
 
   @Get()
@@ -35,8 +35,14 @@ export class PlanetaController {
     return await this.planetaService.recuperarPorNome(nome);
   }
 
+  @Delete('limpar')
+  async limpar( @Response() res): Promise<any> {
+    await this.planetaService.limpar();
+    return res.status(200).send();
+  }
+
   @Delete(':id')
-  async excluir(@Param('id') id: string, @Response() res): Promise<void> {
+  async excluir(@Param('id') id: string, @Response() res): Promise<any> {
     await this.planetaService.excluir(id);
     return res.status(200).send();
   }
