@@ -22,8 +22,6 @@ export class PlanetaRepository extends Repository<Planeta> {
         try {
             const planeta = new Planeta();
             planeta.nome = nome;
-            // tslint:disable-next-line:no-console
-            console.log(planeta);
             const busca = await this.find( planeta );
             return busca;
         } catch (error) {
@@ -34,7 +32,6 @@ export class PlanetaRepository extends Repository<Planeta> {
 
     async atualizar(planeta: Planeta): Promise<Planeta> {
         try {
-
             const planetaAntigo = await this.findOne(planeta.id);
 
             if (!planetaAntigo) {

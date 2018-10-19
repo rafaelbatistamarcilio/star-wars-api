@@ -11,9 +11,6 @@ export class PlanetaController {
     return await this.planetaService.adicionar(planeta);
   }
 
-  /**
-   * @todo implementar update
-   */
   @Put()
   async editar(@Body() planeta: Planeta): Promise<Planeta> {
     return await this.planetaService.editar(planeta);

@@ -1,6 +1,5 @@
 import { Injectable, Logger, BadGatewayException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Planeta } from './planeta.entity';
 import axios from 'axios';
 import { PesquisaSW } from './pesquisa-sw.model';
