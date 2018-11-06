@@ -1,5 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Repository, EntityRepository, FindConditions } from 'typeorm';
+import { Logger } from '@nestjs/common';
+import { Repository, EntityRepository} from 'typeorm';
 import { Planeta } from './planeta.entity';
 
 @EntityRepository(Planeta)
