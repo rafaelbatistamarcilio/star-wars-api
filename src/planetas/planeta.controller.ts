@@ -1,10 +1,12 @@
-import { Get, Controller, Post, Body, Param, Delete, Put, Response } from '@nestjs/common';
+import { Get, Controller, Post, Body, Param, Delete, Put, Response, Inject } from '@nestjs/common';
 import { PlanetaService } from './planeta.service';
 import { Planeta } from './planeta.entity';
 
 @Controller('planetas')
 export class PlanetaController {
-  constructor(private readonly planetaService: PlanetaService) { }
+
+  @Inject()
+  private readonly planetaService: PlanetaService;
 
   @Post()
   async adicionar(@Body() planeta: Planeta): Promise<Planeta> {
@@ -33,7 +35,7 @@ export class PlanetaController {
   }
 
   @Delete('limpar')
-  async limpar( @Response() res): Promise<any> {
+  async limpar(@Response() res): Promise<any> {
     await this.planetaService.limpar();
     return res.status(200).send();
   }

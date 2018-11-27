@@ -40,5 +40,7 @@ Thumbs.db
 
 # local enviroment variables
 /.env
+.env
 
 /.package-lock.json
+.package-lock.json
